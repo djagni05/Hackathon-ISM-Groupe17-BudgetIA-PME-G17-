@@ -35,6 +35,29 @@ from src.finance.budget_previsionnel import (
 DATA_PATH   = os.path.join(ROOT, "data", "transactions_pme.csv")
 MODELS_PATH = os.path.join(ROOT, "models")
 
+
+# ────────────────────────────────────────────────────────────────────
+#  INITIALISATION AU DÉMARRAGE (comptes démo, dossiers)
+# ────────────────────────────────────────────────────────────────────
+@st.cache_resource(show_spinner=False)
+def initialiser_app():
+    from src.cyber.securite import creer_utilisateur, _init_db
+    os.makedirs(os.path.join(ROOT, "data"),   exist_ok=True)
+    os.makedirs(os.path.join(ROOT, "models"), exist_ok=True)
+    _init_db()
+    comptes = [
+        ("admin_pme",  "BudgetIA@2026",  "dirigeant"),
+        ("comptable1", "Compta@PME2026", "comptable"),
+        ("expert_ext", "Expert@OHADA26", "expert_comptable"),
+    ]
+    for username, pwd, role in comptes:
+        try:
+            creer_utilisateur(username, pwd, role)
+        except Exception:
+            pass
+
+initialiser_app()
+
 # ────────────────────────────────────────────────────────────────────
 #  CONFIG PAGE
 # ────────────────────────────────────────────────────────────────────

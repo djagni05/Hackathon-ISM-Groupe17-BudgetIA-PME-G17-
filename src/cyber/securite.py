@@ -45,7 +45,13 @@ def generer_cle():
 
 
 def charger_cle():
-    """Charge la clé Fernet depuis le disque. La génère si absente."""
+    """Charge la clé Fernet : depuis st.secrets (Streamlit Cloud) ou depuis le fichier local."""
+    try:
+        import streamlit as st
+        if "FERNET_KEY" in st.secrets:
+            return st.secrets["FERNET_KEY"].encode()
+    except Exception:
+        pass
     if not os.path.exists(KEY_PATH):
         return generer_cle()
     with open(KEY_PATH, "rb") as f:
