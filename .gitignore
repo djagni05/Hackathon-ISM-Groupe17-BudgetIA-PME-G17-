@@ -1,0 +1,25 @@
+# Clé de chiffrement — NE JAMAIS VERSIONNER
+data/.fernet_key
+
+# Bases de données locales
+data/*.db
+
+# Modèles entraînés (trop volumineux)
+models/*.pkl
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Fichiers temporaires Word/Excel
+~$*.docx
+~$*.xlsx
+
+# Environnements virtuels
+venv/
+.env
+
+# Fichiers système
+.DS_Store
+Thumbs.db
