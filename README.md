@@ -1,22 +1,39 @@
-# Hackathon IA & Cybersécurité 2026
+# Projet 16 - Plateforme de budgétisation et comptabilité automatisée pour les PME
 
-## Groupe 17
+## Groupe 17 - Hackathon IA & Cybersécurité 2026
 
-Projet : Plateforme de budgétisation et comptabilité automatisée pour les PME.
-
-### Membres
-- Nzigou Mouanda Loris Stefie (IA)
-- Ngom Fatou Kiné (IA)
-- Sy Kadiatou (Cybersécurité)
-- Branham NDZIENGOMO DJAGNI (Cybersécurité)
-- Issemiba Edwine Roxane (MOSIEF)
-- Sane Mohamed L (MOSIEF)
-- Gueye Marieme (IAGE)
+### Objectif
+Développer une plateforme intelligente permettant aux PME de :
+- Classifier automatiquement les transactions financières.
+- Prévoir les budgets futurs grâce à l'IA.
+- Générer des tableaux de bord financiers.
+- Sécuriser les données sensibles.
 
 ### Technologies
 - Python
 - Streamlit
 - Pandas
-- Scikit-learn
+- Scikit-Learn
 - Prophet
 - SQLite
+- Cryptography
+
+### Membres
+- Branham NDZIENGOMO DJAGNI (Cybersécurité)
+- Sy Kadiatou (Cybersécurité)
+- Nzigou Mouanda Loris Stefie (IA)
+- Ngom Fatou Kiné (IA)
+- ISSEMIBA Edwine Roxane (MOSIEF)
+- Sane Mohamed L (MOSIEF)
+- Gueye Marieme (IAGE)
+
+### État actuel
+✅ Dépôt GitHub créé
+
+✅ Organisation du groupe lancée
+
+✅ Répartition des premiers rôles commencée
+
+⏳ Conception de l'architecture
+
+⏳ Développement du prototype
