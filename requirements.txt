@@ -1,0 +1,10 @@
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.4.2
+prophet==1.1.5
+streamlit==1.35.0
+plotly==5.22.0
+cryptography==42.0.7
+matplotlib==3.9.0
+sqlalchemy==2.0.30
+bcrypt==4.1.3
