@@ -32,8 +32,11 @@ from src.finance.budget_previsionnel import (
     resume_previsions, calculer_indicateurs,
 )
 
-DATA_PATH   = os.path.join(ROOT, "data", "transactions_pme.csv")
-MODELS_PATH = os.path.join(ROOT, "models")
+# Chemins : utilise /tmp sur Streamlit Cloud, sinon le dossier du repo
+_DATA_DIR   = os.environ.get("BUDGETIA_DATA_DIR",   os.path.join(ROOT, "data"))
+_MODELS_DIR = os.environ.get("BUDGETIA_MODELS_DIR", os.path.join(ROOT, "models"))
+DATA_PATH   = os.path.join(_DATA_DIR,   "transactions_pme.csv")
+MODELS_PATH = _MODELS_DIR
 
 
 # ────────────────────────────────────────────────────────────────────
@@ -42,8 +45,6 @@ MODELS_PATH = os.path.join(ROOT, "models")
 @st.cache_resource(show_spinner=False)
 def initialiser_app():
     from src.cyber.securite import creer_utilisateur, _init_db
-    os.makedirs(os.path.join(ROOT, "data"),   exist_ok=True)
-    os.makedirs(os.path.join(ROOT, "models"), exist_ok=True)
     _init_db()
     comptes = [
         ("admin_pme",  "BudgetIA@2026",  "dirigeant"),

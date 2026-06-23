@@ -13,8 +13,9 @@ from datetime import datetime, timedelta
 
 warnings.filterwarnings("ignore")
 
-DATA_PATH   = os.path.join(os.path.dirname(__file__), "..", "..", "data", "transactions_pme.csv")
-MODELS_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "models")
+_BASE       = os.path.join(os.path.dirname(__file__), "..", "..")
+DATA_PATH   = os.path.join(os.environ.get("BUDGETIA_DATA_DIR",   os.path.join(_BASE, "data")),   "transactions_pme.csv")
+MODELS_PATH = os.environ.get("BUDGETIA_MODELS_DIR", os.path.join(_BASE, "models"))
 
 
 def charger_et_preparer(data_path=DATA_PATH):

@@ -19,9 +19,10 @@ from cryptography.fernet import Fernet
 
 # ── Chemins ─────────────────────────────────────────────────────────
 BASE_DIR    = os.path.join(os.path.dirname(__file__), "..", "..")
-DB_PATH     = os.path.join(BASE_DIR, "data", "budgetia.db")
-KEY_PATH    = os.path.join(BASE_DIR, "data", ".fernet_key")   # NE PAS VERSIONNER
-JOURNAL_DB  = os.path.join(BASE_DIR, "data", "journal_audit.db")
+_DATA_DIR   = os.environ.get("BUDGETIA_DATA_DIR", os.path.join(BASE_DIR, "data"))
+DB_PATH     = os.path.join(_DATA_DIR, "budgetia.db")
+KEY_PATH    = os.path.join(_DATA_DIR, ".fernet_key")
+JOURNAL_DB  = os.path.join(_DATA_DIR, "journal_audit.db")
 
 # ── Rôles et permissions ─────────────────────────────────────────────
 ROLES = {
