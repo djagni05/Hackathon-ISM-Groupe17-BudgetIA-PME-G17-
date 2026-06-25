@@ -227,8 +227,115 @@ st.markdown("""
     hr {
         border: none;
         border-top: 1.5px solid #e5e7eb;
-        margin: 1rem 0;
+        margin: 1.5rem 0;
     }
+
+    /* ── Espacement global du contenu ── */
+    .block-container {
+        padding: 2rem 3rem 3rem 3rem !important;
+        max-width: 1200px;
+    }
+
+    /* ── En-têtes de page ── */
+    .page-header {
+        background: linear-gradient(135deg, #1F497D 0%, #2674B5 100%);
+        border-radius: 16px;
+        padding: 1.4rem 2rem;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    .page-header h1 {
+        color: white !important;
+        font-size: 1.7rem;
+        margin: 0 0 0.2rem 0;
+    }
+    .page-header p {
+        color: rgba(255,255,255,0.75);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    /* ── Cartes de section ── */
+    .section-card {
+        background: white;
+        border-radius: 14px;
+        padding: 1.5rem 1.8rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 12px rgba(31,73,125,0.07);
+        border: 1px solid #e8eef7;
+    }
+    .section-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1F497D;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e8eef7;
+    }
+
+    /* ── KPI Cards ── */
+    [data-testid="metric-container"] {
+        background: white;
+        border-radius: 14px;
+        padding: 1.3rem 1.2rem !important;
+        box-shadow: 0 2px 14px rgba(31,73,125,0.08);
+        border-left: 5px solid #2674B5;
+        margin-bottom: 0.5rem;
+    }
+    [data-testid="metric-container"] label {
+        font-size: 0.82rem !important;
+        color: #6b7280 !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.3px;
+    }
+    [data-testid="metric-container"] [data-testid="stMetricValue"] {
+        font-size: 1.5rem !important;
+        font-weight: 800 !important;
+        color: #1F497D !important;
+    }
+
+    /* ── Résultat classification ── */
+    .result-card {
+        background: white;
+        border-radius: 14px;
+        padding: 1.5rem;
+        border: 2px solid #22c55e;
+        margin-top: 1rem;
+    }
+    .result-card-warn {
+        border-color: #f59e0b;
+    }
+    .result-label {
+        font-size: 0.82rem;
+        color: #6b7280;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+    }
+    .result-value {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #1F497D;
+    }
+    .result-conf {
+        font-size: 2rem;
+        font-weight: 900;
+    }
+
+    /* ── Espace entre widgets ── */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        margin-bottom: 1.2rem;
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 8px 8px 0 0;
+        padding: 0.5rem 1.2rem;
+        font-weight: 600;
+    }
+    div[data-testid="column"] {
+        padding: 0 0.6rem;
+    }
+    .stSlider { padding: 0.5rem 0 1rem 0; }
+    .stFileUploader { padding: 0.5rem 0; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -392,30 +499,38 @@ def sidebar():
 #  PAGE 1 : TABLEAU DE BORD
 # ────────────────────────────────────────────────────────────────────
 def page_dashboard(df):
-    st.markdown("## Tableau de bord financier")
     journaliser(st.session_state.username, "consultation", "Tableau de bord")
 
-    charges  = df[df["type"] == "charge"]["montant"].sum()
-    produits = df[df["type"] == "produit"]["montant"].sum()
-    solde    = produits - charges
+    st.markdown("""
+    <div class="page-header">
+        <h1>📈 Tableau de bord financier</h1>
+        <p>Vue d'ensemble de la santé financière de votre PME — Année 2025</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    charges      = df[df["type"] == "charge"]["montant"].sum()
+    produits     = df[df["type"] == "produit"]["montant"].sum()
+    solde        = produits - charges
     nb_anomalies = df[df["anomalie"] == 1]["anomalie"].sum() if "anomalie" in df.columns else 0
 
-    # KPIs
+    # ── KPIs ──────────────────────────────────────────────────────────
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Total Produits",  f"{produits:,.0f} FCFA",  delta="2025")
-    c2.metric("Total Charges",   f"{charges:,.0f} FCFA",   delta=None)
-    c3.metric("Resultat Net",    f"{solde:,.0f} FCFA",
-              delta="Benefice" if solde > 0 else "Deficit")
-    c4.metric("Alertes Fraude",  f"{int(nb_anomalies)} transaction(s)",
-              delta="A verifier" if nb_anomalies > 0 else None,
-              delta_color="inverse")
+    c1.metric("💰 Total Produits",  f"{produits:,.0f} FCFA",  delta="Année 2025")
+    c2.metric("📉 Total Charges",   f"{charges:,.0f} FCFA")
+    c3.metric("📊 Résultat Net",    f"{solde:,.0f} FCFA",
+              delta="Bénéfice" if solde > 0 else "Déficit",
+              delta_color="normal" if solde > 0 else "inverse")
+    c4.metric("🚨 Alertes Fraude",  f"{int(nb_anomalies)} transaction(s)",
+              delta="À vérifier" if nb_anomalies > 0 else "Aucune alerte",
+              delta_color="inverse" if nb_anomalies > 0 else "off")
 
-    st.markdown("---")
-    col_g, col_d = st.columns(2)
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    # Évolution mensuelle
+    # ── Graphiques ────────────────────────────────────────────────────
+    col_g, col_d = st.columns([3, 2], gap="large")
+
     with col_g:
-        st.markdown("#### Evolution mensuelle")
+        st.markdown('<div class="section-card"><div class="section-title">Évolution mensuelle — Produits vs Charges</div>', unsafe_allow_html=True)
         df_m = df.copy()
         df_m["mois"] = df_m["date"].dt.to_period("M").astype(str)
         mensuel = df_m.groupby(["mois", "type"])["montant"].sum().reset_index()
@@ -425,24 +540,35 @@ def page_dashboard(df):
             color_discrete_map={"produit": "#22c55e", "charge": "#ef4444"},
             labels={"montant": "FCFA", "mois": "", "type": ""},
         )
-        fig.update_layout(height=320, margin=dict(t=10, b=10))
+        fig.update_layout(
+            height=340, margin=dict(t=10, b=10, l=10, r=10),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02),
+            plot_bgcolor="white", paper_bgcolor="white",
+        )
+        fig.update_xaxes(tickangle=-45)
         st.plotly_chart(fig, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # Répartition des charges
     with col_d:
-        st.markdown("#### Repartition des charges")
+        st.markdown('<div class="section-card"><div class="section-title">Répartition des charges</div>', unsafe_allow_html=True)
         charges_df = df[df["type"] == "charge"].groupby("categorie")["montant"].sum().reset_index()
         charges_df["categorie"] = charges_df["categorie"].str.split(" - ").str[1]
         fig2 = px.pie(
             charges_df, values="montant", names="categorie",
-            hole=0.4,
+            hole=0.45,
             color_discrete_sequence=px.colors.qualitative.Set3,
         )
-        fig2.update_layout(height=320, margin=dict(t=10, b=10))
+        fig2.update_layout(
+            height=340, margin=dict(t=10, b=10, l=10, r=10),
+            legend=dict(orientation="v", font_size=10),
+            paper_bgcolor="white",
+        )
+        fig2.update_traces(textposition="inside", textinfo="percent")
         st.plotly_chart(fig2, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # Solde cumulé
-    st.markdown("#### Evolution du solde cumulé")
+    # ── Solde cumulé ─────────────────────────────────────────────────
+    st.markdown('<div class="section-card"><div class="section-title">Évolution du solde cumulé sur l\'année</div>', unsafe_allow_html=True)
     df_daily = df.groupby(["date", "type"])["montant"].sum().unstack(fill_value=0).reset_index()
     if "produit" not in df_daily: df_daily["produit"] = 0
     if "charge"  not in df_daily: df_daily["charge"]  = 0
@@ -453,30 +579,40 @@ def page_dashboard(df):
     fig3.add_trace(go.Scatter(
         x=df_daily["date"], y=df_daily["solde_cumule"],
         fill="tozeroy", name="Solde cumulé",
-        line=dict(color="#3b82f6", width=2),
-        fillcolor="rgba(59,130,246,0.1)",
+        line=dict(color="#2674B5", width=2.5),
+        fillcolor="rgba(38,116,181,0.1)",
     ))
-    fig3.add_hline(y=0, line_dash="dash", line_color="red", opacity=0.5)
-    fig3.update_layout(height=280, margin=dict(t=10, b=10),
-                       yaxis_title="FCFA", xaxis_title="")
+    fig3.add_hline(y=0, line_dash="dash", line_color="#ef4444", opacity=0.5)
+    fig3.update_layout(
+        height=260, margin=dict(t=10, b=10, l=10, r=10),
+        yaxis_title="FCFA", xaxis_title="",
+        plot_bgcolor="white", paper_bgcolor="white",
+    )
     st.plotly_chart(fig3, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ────────────────────────────────────────────────────────────────────
 #  PAGE 2 : CLASSIFICATION
 # ────────────────────────────────────────────────────────────────────
 def page_classification(clf):
-    st.markdown("## Classification automatique des transactions")
-
     if not verifier_permission(st.session_state.role, "lire"):
-        st.error("Acces refuse.")
+        st.error("Accès refusé.")
         return
 
-    tab1, tab2 = st.tabs(["Saisie manuelle", "Importer un CSV"])
+    st.markdown("""
+    <div class="page-header">
+        <h1>🤖 Classification automatique OHADA</h1>
+        <p>Catégorisation intelligente des transactions par IA (TF-IDF + Random Forest — 98.4% précision)</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    tab1, tab2 = st.tabs(["✏️ Saisie manuelle", "📂 Importer un CSV"])
 
     # ── Saisie manuelle ──────────────────────────────────────────────
     with tab1:
-        st.markdown("Entrez le libellé d'une transaction pour la classifier automatiquement.")
+        st.markdown('<div class="section-card"><div class="section-title">Saisir une transaction</div>', unsafe_allow_html=True)
+        st.markdown("Entrez le libellé d'une transaction pour la classifier automatiquement selon les normes OHADA.")
         libelle = st.text_input("Libellé de la transaction",
                                 placeholder="ex: FACTURE SENELEC ELECTRICITE")
 
@@ -502,9 +638,11 @@ def page_classification(clf):
                     for c, p in top3:
                         barre = int(p / 5)
                         st.markdown(f"`{c[:35]}` {'█' * barre} {p}%")
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # ── Import CSV ───────────────────────────────────────────────────
     with tab2:
+        st.markdown('<div class="section-card"><div class="section-title">Importer un relevé CSV</div>', unsafe_allow_html=True)
         st.markdown("Importez un relevé bancaire CSV avec une colonne `libelle`.")
         fichier = st.file_uploader("Choisir un fichier CSV", type=["csv"])
 
@@ -531,48 +669,58 @@ def page_classification(clf):
 
                     csv_out = df_res.to_csv(index=False).encode("utf-8")
                     st.download_button(
-                        "Telecharger le résultat",
+                        "⬇️ Télécharger le résultat",
                         csv_out,
                         "transactions_classifiees.csv",
                         "text/csv",
                     )
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ────────────────────────────────────────────────────────────────────
 #  PAGE 3 : BUDGET PRÉVISIONNEL
 # ────────────────────────────────────────────────────────────────────
 def page_budget():
-    st.markdown("## Budget prévisionnel — Prophet (Meta)")
     journaliser(st.session_state.username, "consultation", "Budget previsionnel")
 
-    horizon = st.slider("Horizon de prévision (jours)", 15, 90, 30, 15)
+    st.markdown("""
+    <div class="page-header">
+        <h1>📅 Budget prévisionnel</h1>
+        <p>Prévisions financières basées sur Prophet (Meta) — Modélisation avec saisonnalité</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with st.spinner("Calcul des prévisions..."):
+    st.markdown('<div class="section-card"><div class="section-title">Paramètres de prévision</div>', unsafe_allow_html=True)
+    horizon = st.slider("Horizon de prévision (jours)", 15, 90, 30, 15)
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    with st.spinner("Calcul des prévisions en cours..."):
         resultats = charger_previsions()
         resume    = resume_previsions(resultats, horizon_jours=horizon)
         mensuel, tendance = calculer_indicateurs(DATA_PATH)
 
-    # KPIs prévisions
+    # ── KPIs prévisions ────────────────────────────────────────────
     c1, c2, c3 = st.columns(3)
-    c1.metric("Produits prévus",
+    c1.metric("💰 Produits prévus",
               f"{resume['produits']['total_prevu']:,.0f} FCFA",
               f"±{(resume['produits']['intervalle_haut'] - resume['produits']['intervalle_bas'])//2:,.0f}")
-    c2.metric("Charges prévues",
+    c2.metric("📉 Charges prévues",
               f"{resume['charges']['total_prevu']:,.0f} FCFA",
               f"±{(resume['charges']['intervalle_haut'] - resume['charges']['intervalle_bas'])//2:,.0f}")
     solde_prevu = resume['solde_net']['total_prevu']
-    c3.metric("Solde prévu",
+    c3.metric("📊 Solde prévu",
               f"{solde_prevu:,.0f} FCFA",
-              "Excedent" if solde_prevu > 0 else "Deficit",
+              "Excédent" if solde_prevu > 0 else "Déficit",
               delta_color="normal" if solde_prevu > 0 else "inverse")
 
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    # Graphique prévisions vs historique
-    col_g, col_d = st.columns(2)
+    # ── Graphique prévisions vs historique ─────────────────────────
+    col_g, col_d = st.columns([3, 2], gap="large")
 
     with col_g:
-        st.markdown(f"#### Prévision des produits ({horizon}j)")
+        st.markdown('<div class="section-card"><div class="section-title">' + f'Prévision des produits — horizon {horizon} jours</div>', unsafe_allow_html=True)
         data_prod = resultats["produits"]
         hist = data_prod["historique"].rename(columns={"ds": "date", "reel": "valeur"})
         hist["type"] = "Historique"
@@ -594,11 +742,16 @@ def page_budget():
             line=dict(color="rgba(255,255,255,0)"),
             name="Intervalle 90%",
         ))
-        fig.update_layout(height=300, margin=dict(t=10, b=10))
+        fig.update_layout(
+            height=300, margin=dict(t=10, b=10, l=10, r=10),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02),
+            plot_bgcolor="white", paper_bgcolor="white",
+        )
         st.plotly_chart(fig, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with col_d:
-        st.markdown("#### Résultats mensuels (6 derniers mois)")
+        st.markdown('<div class="section-card"><div class="section-title">Résultats mensuels (6 derniers mois)</div>', unsafe_allow_html=True)
         df_m = mensuel[["produit", "charge", "resultat_net", "taux_marge"]].tail(6).reset_index()
         df_m["mois"] = df_m["mois"].astype(str)
 
@@ -611,20 +764,30 @@ def page_budget():
             line=dict(color="#f59e0b", width=2),
         ))
         fig2.update_layout(
-            barmode="group", height=300, margin=dict(t=10, b=10),
+            barmode="group", height=300, margin=dict(t=10, b=10, l=10, r=10),
             yaxis2=dict(overlaying="y", side="right"),
+            plot_bgcolor="white", paper_bgcolor="white",
         )
         st.plotly_chart(fig2, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    st.info(f"Tendance des 3 derniers mois : **{tendance.upper()}**")
+    st.markdown("<br>", unsafe_allow_html=True)
+    tendance_icon = "📈" if tendance == "hausse" else "📉" if tendance == "baisse" else "➡️"
+    st.info(f"{tendance_icon} Tendance des 3 derniers mois : **{tendance.upper()}**")
 
 
 # ────────────────────────────────────────────────────────────────────
 #  PAGE 4 : ANOMALIES
 # ────────────────────────────────────────────────────────────────────
 def page_anomalies(df, iso):
-    st.markdown("## Detection des transactions suspectes")
     journaliser(st.session_state.username, "consultation", "Detection anomalies")
+
+    st.markdown("""
+    <div class="page-header">
+        <h1>🚨 Détection des anomalies</h1>
+        <p>Identification des transactions suspectes par Isolation Forest (apprentissage non-supervisé)</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Préparer les features
     df_feat = df.copy()
@@ -642,19 +805,19 @@ def page_anomalies(df, iso):
     suspectes  = df_feat[df_feat["suspect"]].sort_values("score_anomalie")
     normales   = df_feat[~df_feat["suspect"]]
 
-    # Résumé
+    # ── KPIs ──────────────────────────────────────────────────────────
     c1, c2, c3 = st.columns(3)
-    c1.metric("Transactions analysées", len(df))
-    c2.metric("Transactions suspectes", len(suspectes),
+    c1.metric("🔍 Transactions analysées", len(df))
+    c2.metric("⚠️ Transactions suspectes", len(suspectes),
               delta=f"{len(suspectes)/len(df)*100:.1f}%", delta_color="inverse")
-    c3.metric("Montant suspect total",
+    c3.metric("💸 Montant suspect total",
               f"{suspectes['montant'].sum():,.0f} FCFA")
 
-    st.markdown("---")
-    col_g, col_d = st.columns([3, 2])
+    st.markdown("<br>", unsafe_allow_html=True)
+    col_g, col_d = st.columns([3, 2], gap="large")
 
     with col_g:
-        st.markdown("#### Transactions suspectes")
+        st.markdown('<div class="section-card"><div class="section-title">Transactions suspectes détectées</div>', unsafe_allow_html=True)
         if len(suspectes) > 0:
             df_show = suspectes[["date", "libelle", "categorie", "montant", "score_anomalie"]].copy()
             df_show["date"]   = df_show["date"].dt.strftime("%Y-%m-%d")
@@ -674,10 +837,11 @@ def page_anomalies(df, iso):
                 use_container_width=True, height=350,
             )
         else:
-            st.success("Aucune transaction suspecte détectée.")
+            st.success("✅ Aucune transaction suspecte détectée.")
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with col_d:
-        st.markdown("#### Distribution des montants")
+        st.markdown('<div class="section-card"><div class="section-title">Distribution des montants</div>', unsafe_allow_html=True)
         fig = go.Figure()
         fig.add_trace(go.Histogram(
             x=normales["montant"], name="Normal",
@@ -689,50 +853,59 @@ def page_anomalies(df, iso):
         ))
         fig.update_layout(
             barmode="overlay", height=350,
-            margin=dict(t=10, b=10),
+            margin=dict(t=10, b=10, l=10, r=10),
             xaxis_title="Montant (FCFA)",
+            plot_bgcolor="white", paper_bgcolor="white",
         )
         st.plotly_chart(fig, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # Alerte si anomalie flagrante
+    # ── Alertes critiques ─────────────────────────────────────────────
     critiques = suspectes[suspectes["score_anomalie"] < -0.04]
     if len(critiques) > 0:
-        st.markdown("#### Alertes critiques")
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="section-card"><div class="section-title">🚨 Alertes critiques</div>', unsafe_allow_html=True)
         for _, row in critiques.iterrows():
             st.markdown(f"""
             <div class="alerte-rouge">
-                <strong>ALERTE</strong> — {row['date'].strftime('%Y-%m-%d') if hasattr(row['date'], 'strftime') else row['date']}<br>
+                <strong>🚨 ALERTE CRITIQUE</strong> — {row['date'].strftime('%Y-%m-%d') if hasattr(row['date'], 'strftime') else row['date']}<br>
                 {row['libelle']} — <strong>{row['montant']:,.0f} FCFA</strong><br>
                 Score anomalie : {row['score_anomalie']:.4f}
             </div>
             """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ────────────────────────────────────────────────────────────────────
 #  PAGE 5 : JOURNAL D'AUDIT
 # ────────────────────────────────────────────────────────────────────
 def page_journal():
-    st.markdown("## Journal d'audit — Chaine SHA-256")
+    st.markdown("""
+    <div class="page-header">
+        <h1>📋 Journal d'audit</h1>
+        <p>Traçabilité complète des actions — Chaîne de hachage SHA-256 (style blockchain)</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     integre, anomalies = verifier_integrite_journal()
 
     if integre:
         st.markdown("""
         <div class="alerte-verte">
-            <strong>INTEGRITE CONFIRMEE</strong> — La chaine de hachage est intacte.
+            <strong>✅ INTÉGRITÉ CONFIRMÉE</strong> — La chaîne de hachage SHA-256 est intacte.
             Aucune modification non autorisée détectée.
         </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown("""
         <div class="alerte-rouge">
-            <strong>ALERTE — INTEGRITE COMPROMISE</strong>
+            <strong>🚨 ALERTE — INTÉGRITÉ COMPROMISE</strong> — Une modification non autorisée a été détectée.
         </div>
         """, unsafe_allow_html=True)
         for a in anomalies:
             st.error(a)
 
-    st.markdown("---")
+    st.markdown("<br>", unsafe_allow_html=True)
     entrees = lire_journal(100)
 
     if entrees:
@@ -741,27 +914,33 @@ def page_journal():
             lambda h: f'<span class="hash-badge">{h}</span>'
         )
 
-        # Filtres
-        col_f1, col_f2 = st.columns(2)
+        # ── Filtres ───────────────────────────────────────────────────
+        st.markdown('<div class="section-card"><div class="section-title">Filtres</div>', unsafe_allow_html=True)
+        col_f1, col_f2 = st.columns(2, gap="large")
         with col_f1:
             users = ["Tous"] + list(df_journal["utilisateur"].unique())
-            filtre_user = st.selectbox("Filtrer par utilisateur", users)
+            filtre_user = st.selectbox("👤 Filtrer par utilisateur", users)
         with col_f2:
             actions = ["Toutes"] + list(df_journal["action"].unique())
-            filtre_action = st.selectbox("Filtrer par action", actions)
+            filtre_action = st.selectbox("⚡ Filtrer par action", actions)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
 
         df_filtre = df_journal.copy()
         if filtre_user   != "Tous":    df_filtre = df_filtre[df_filtre["utilisateur"] == filtre_user]
         if filtre_action != "Toutes":  df_filtre = df_filtre[df_filtre["action"]      == filtre_action]
 
-        st.markdown(f"**{len(df_filtre)} entrées**")
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.markdown(f"**{len(df_filtre)} entrée(s)** dans le journal")
         st.write(
             df_filtre[["id", "horodatage", "utilisateur", "action", "details", "hash"]]
             .to_html(escape=False, index=False),
             unsafe_allow_html=True,
         )
+        st.markdown('</div>', unsafe_allow_html=True)
     else:
-        st.info("Le journal est vide.")
+        st.info("Le journal d'audit est vide pour le moment.")
 
 
 # ────────────────────────────────────────────────────────────────────
