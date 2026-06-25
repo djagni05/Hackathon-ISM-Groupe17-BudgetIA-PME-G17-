@@ -4,9 +4,6 @@ data/.fernet_key
 # Bases de données locales
 data/*.db
 
-# Modèles entraînés (trop volumineux)
-models/*.pkl
-
 # Cache Python
 __pycache__/
 *.pyc
