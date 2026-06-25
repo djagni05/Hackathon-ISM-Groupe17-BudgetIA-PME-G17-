@@ -74,7 +74,10 @@ st.markdown("""
 <style>
     /* ── Fond général ── */
     .stApp {
-        background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+        background: #e8eef7;
+    }
+    .block-container {
+        background: transparent;
     }
 
     /* ── Page login ── */
@@ -147,7 +150,9 @@ st.markdown("""
         background: white;
         border-radius: 14px;
         padding: 1.1rem 1rem;
-        box-shadow: 0 2px 12px rgba(31,73,125,0.08);
+        box-shadow: 0 4px 18px rgba(31,73,125,0.18);
+        border-left: 5px solid #2674B5;
+        border: 1.5px solid #b8cce4;
         border-left: 5px solid #2674B5;
     }
 
@@ -233,7 +238,7 @@ st.markdown("""
     /* ── Espacement global du contenu ── */
     .block-container {
         padding: 2rem 3rem 3rem 3rem !important;
-        max-width: 1200px;
+        max-width: 1200px !important;
     }
 
     /* ── En-têtes de page ── */
@@ -257,12 +262,12 @@ st.markdown("""
 
     /* ── Cartes de section ── */
     .section-card {
-        background: white;
+        background: #ffffff;
         border-radius: 14px;
         padding: 1.5rem 1.8rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 2px 12px rgba(31,73,125,0.07);
-        border: 1px solid #e8eef7;
+        box-shadow: 0 4px 20px rgba(31,73,125,0.18);
+        border: 1.5px solid #b8cce4;
     }
     .section-title {
         font-size: 1.05rem;
@@ -270,7 +275,7 @@ st.markdown("""
         color: #1F497D;
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
-        border-bottom: 2px solid #e8eef7;
+        border-bottom: 2.5px solid #2674B5;
     }
 
     /* ── KPI Cards ── */
@@ -278,8 +283,9 @@ st.markdown("""
         background: white;
         border-radius: 14px;
         padding: 1.3rem 1.2rem !important;
-        box-shadow: 0 2px 14px rgba(31,73,125,0.08);
-        border-left: 5px solid #2674B5;
+        box-shadow: 0 4px 20px rgba(31,73,125,0.20);
+        border: 1.5px solid #b8cce4;
+        border-left: 5px solid #2674B5 !important;
         margin-bottom: 0.5rem;
     }
     [data-testid="metric-container"] label {
