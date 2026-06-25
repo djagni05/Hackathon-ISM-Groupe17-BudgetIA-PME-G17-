@@ -4,6 +4,20 @@ data/.fernet_key
 # Bases de données locales
 data/*.db
 
+# Données sensibles
+data/*.csv
+
+# Modèles entraînés
+models/*.pkl
+
+# Scripts source (non versionnés)
+src/finance/*.py
+src/ia/*.py
+
+# Fichier de lancement et dépendances
+streamlit_app.py
+requirements.txt
+
 # Cache Python
 __pycache__/
 *.pyc
