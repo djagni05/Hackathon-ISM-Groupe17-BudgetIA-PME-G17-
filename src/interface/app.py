@@ -184,11 +184,12 @@ st.markdown("""
     /* ── Hash badge audit ── */
     .hash-badge {
         font-family: monospace;
-        font-size: 0.72rem;
-        background: #1e293b;
-        color: #94a3b8;
-        padding: 2px 8px;
+        font-size: 0.70rem;
+        background: #1F497D;
+        color: #ffffff !important;
+        padding: 3px 8px;
         border-radius: 5px;
+        letter-spacing: 0.5px;
     }
 
     /* ── Texte général — forcer couleur foncée ── */
