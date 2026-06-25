@@ -163,12 +163,14 @@ st.markdown("""
         padding: 0.8rem 1rem;
         border-radius: 8px;
         margin-bottom: 0.5rem;
+        color: #7f1d1d !important;
     }
     .alerte-verte {
         background: #f0fdf4;
         border-left: 4px solid #22c55e;
         padding: 0.8rem 1rem;
         border-radius: 8px;
+        color: #14532d !important;
     }
     .alerte-orange {
         background: #fff7ed;
@@ -176,6 +178,7 @@ st.markdown("""
         padding: 0.8rem 1rem;
         border-radius: 8px;
         margin-bottom: 0.5rem;
+        color: #7c2d12 !important;
     }
 
     /* ── Hash badge audit ── */
@@ -188,9 +191,44 @@ st.markdown("""
         border-radius: 5px;
     }
 
-    /* ── Titres de section ── */
-    h2, h3 {
+    /* ── Texte général — forcer couleur foncée ── */
+    .stApp p, .stApp span, .stApp div, .stApp label,
+    .stMarkdown p, .stMarkdown span, .stMarkdown li {
+        color: #1e293b !important;
+    }
+    h1, h2, h3, h4, h5 {
         color: #1F497D !important;
+    }
+
+    /* ── Cartes de section — texte lisible ── */
+    .section-card, .section-card * {
+        color: #1e293b;
+    }
+    .section-title {
+        color: #1F497D !important;
+    }
+
+    /* ── Inputs — fond blanc, texte noir ── */
+    .stTextInput input, .stTextInput textarea,
+    input[type="text"], input[type="password"] {
+        background: #ffffff !important;
+        color: #1e293b !important;
+        border: 1.5px solid #94a3b8 !important;
+        border-radius: 8px !important;
+    }
+    .stTextInput input::placeholder {
+        color: #94a3b8 !important;
+    }
+    .stTextInput input:focus {
+        border-color: #2674B5 !important;
+        box-shadow: 0 0 0 3px rgba(38,116,181,0.2) !important;
+    }
+
+    /* ── Selectbox, slider ── */
+    .stSelectbox div[data-baseweb="select"] > div {
+        background: #ffffff !important;
+        color: #1e293b !important;
+        border: 1.5px solid #94a3b8 !important;
     }
 
     /* ── Boutons principaux ── */
@@ -210,15 +248,9 @@ st.markdown("""
         opacity: 0.88;
     }
 
-    /* ── Inputs ── */
-    .stTextInput input {
-        border-radius: 8px;
-        border: 1.5px solid #d1d5db;
-        padding: 0.5rem 0.8rem;
-    }
-    .stTextInput input:focus {
-        border-color: #2674B5;
-        box-shadow: 0 0 0 3px rgba(38,116,181,0.15);
+    /* ── Tabs ── */
+    .stTabs [data-baseweb="tab"] {
+        color: #1F497D !important;
     }
 
     /* ── Dataframes ── */
