@@ -343,18 +343,20 @@ st.markdown("""
 # ────────────────────────────────────────────────────────────────────
 #  SESSION STATE
 # ────────────────────────────────────────────────────────────────────
-if "connecte"   not in st.session_state: st.session_state.connecte   = False
-if "username"   not in st.session_state: st.session_state.username   = ""
-if "role"       not in st.session_state: st.session_state.role       = ""
+if "connecte"    not in st.session_state: st.session_state.connecte    = False
+if "username"    not in st.session_state: st.session_state.username    = ""
+if "role"        not in st.session_state: st.session_state.role        = ""
 if "classifieur" not in st.session_state: st.session_state.classifieur = None
-if "iso_forest" not in st.session_state: st.session_state.iso_forest = None
+if "iso_forest"  not in st.session_state: st.session_state.iso_forest  = None
+if "df"          not in st.session_state: st.session_state.df          = None
+if "csv_path"    not in st.session_state: st.session_state.csv_path    = None
 
 
 # ────────────────────────────────────────────────────────────────────
 #  CHARGEMENT DES MODÈLES (une seule fois)
 # ────────────────────────────────────────────────────────────────────
 @st.cache_resource(show_spinner=False)
-def charger_modeles():
+def charger_modeles(csv_path):
     clf_path = os.path.join(MODELS_PATH, "classifieur_categories.pkl")
     iso_path = os.path.join(MODELS_PATH, "isolation_forest.pkl")
 
@@ -362,7 +364,7 @@ def charger_modeles():
         clf = charger_classifieur()
     else:
         with st.spinner("Entrainement du classifieur IA..."):
-            clf, _, _ = entrainer_classifieur(DATA_PATH)
+            clf, _, _ = entrainer_classifieur(csv_path)
 
     if os.path.exists(iso_path):
         import pickle
@@ -370,21 +372,78 @@ def charger_modeles():
             iso = pickle.load(f)
     else:
         with st.spinner("Entrainement Isolation Forest..."):
-            iso, _ = entrainer_isolation_forest(DATA_PATH)
+            iso, _ = entrainer_isolation_forest(csv_path)
 
     return clf, iso
 
 
 @st.cache_data(show_spinner=False)
-def charger_donnees():
-    df = pd.read_csv(DATA_PATH)
-    df["date"] = pd.to_datetime(df["date"])
-    return df
+def charger_previsions(csv_path):
+    return obtenir_previsions(csv_path, horizon_jours=90)
 
 
-@st.cache_data(show_spinner=False)
-def charger_previsions():
-    return obtenir_previsions(DATA_PATH, horizon_jours=90)
+# ────────────────────────────────────────────────────────────────────
+#  PAGE IMPORT DONNÉES
+# ────────────────────────────────────────────────────────────────────
+def page_import_donnees():
+    st.markdown("<br><br>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown("""
+        <div class="page-header" style="text-align:center;">
+            <h1>📂 Importer vos données</h1>
+            <p>Chargez votre fichier CSV de transactions pour démarrer l'analyse</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Format attendu du fichier CSV</div>', unsafe_allow_html=True)
+        st.markdown("""
+| Colonne | Type | Exemple |
+|---------|------|---------|
+| `date` | YYYY-MM-DD | 2025-01-15 |
+| `libelle` | texte | FACTURE SENELEC |
+| `montant` | nombre | 125000 |
+| `type` | charge / produit | charge |
+| `categorie` | code OHADA | 626 - Frais postaux |
+        """)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Charger votre fichier</div>', unsafe_allow_html=True)
+
+        fichier = st.file_uploader("Sélectionner un fichier CSV", type=["csv"], label_visibility="collapsed")
+
+        if fichier is not None:
+            try:
+                df = pd.read_csv(fichier)
+                df["date"] = pd.to_datetime(df["date"])
+
+                colonnes_requises = ["date", "libelle", "montant", "type"]
+                manquantes = [c for c in colonnes_requises if c not in df.columns]
+
+                if manquantes:
+                    st.error(f"Colonnes manquantes : {', '.join(manquantes)}")
+                else:
+                    # Sauvegarder le CSV dans le dossier data
+                    csv_dest = os.path.join(_DATA_DIR, "transactions_import.csv")
+                    df.to_csv(csv_dest, index=False)
+
+                    st.session_state.df       = df
+                    st.session_state.csv_path = csv_dest
+
+                    st.success(f"✅ {len(df)} transactions chargées avec succès !")
+                    st.markdown(f"**Aperçu des données :**")
+                    st.dataframe(df.head(5), use_container_width=True)
+
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    if st.button("Lancer l'analyse →", use_container_width=True):
+                        st.rerun()
+            except Exception as e:
+                st.error(f"Erreur de lecture : {e}")
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ────────────────────────────────────────────────────────────────────
@@ -479,10 +538,24 @@ def sidebar():
         page = st.radio("Navigation", pages, label_visibility="collapsed")
 
         st.markdown("---")
+
+        # Infos fichier chargé
+        if st.session_state.df is not None:
+            nb = len(st.session_state.df)
+            st.markdown(f"""
+            <div style="background:rgba(59,130,246,0.15); border-radius:8px; padding:0.5rem 0.8rem; margin-bottom:0.8rem; font-size:0.8rem;">
+                📂 <strong>{nb} transactions</strong> chargées
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("📂  Changer de fichier", use_container_width=True):
+                st.session_state.df       = None
+                st.session_state.csv_path = None
+                st.rerun()
+
         if st.button("🚪  Déconnexion", use_container_width=True):
             journaliser(st.session_state.username, "deconnexion", "")
-            for key in ["connecte", "username", "role"]:
-                st.session_state[key] = "" if key != "connecte" else False
+            for key in ["connecte", "username", "role", "df", "csv_path"]:
+                st.session_state[key] = "" if key not in ["connecte", "df", "csv_path"] else (False if key == "connecte" else None)
             st.rerun()
 
         st.markdown("""
@@ -680,7 +753,7 @@ def page_classification(clf):
 # ────────────────────────────────────────────────────────────────────
 #  PAGE 3 : BUDGET PRÉVISIONNEL
 # ────────────────────────────────────────────────────────────────────
-def page_budget():
+def page_budget(csv_path):
     journaliser(st.session_state.username, "consultation", "Budget previsionnel")
 
     st.markdown("""
@@ -696,9 +769,9 @@ def page_budget():
     st.markdown("<br>", unsafe_allow_html=True)
 
     with st.spinner("Calcul des prévisions en cours..."):
-        resultats = charger_previsions()
+        resultats = charger_previsions(csv_path)
         resume    = resume_previsions(resultats, horizon_jours=horizon)
-        mensuel, tendance = calculer_indicateurs(DATA_PATH)
+        mensuel, tendance = calculer_indicateurs(csv_path)
 
     # ── KPIs prévisions ────────────────────────────────────────────
     c1, c2, c3 = st.columns(3)
@@ -951,8 +1024,14 @@ def main():
         page_login()
         return
 
-    clf, iso = charger_modeles()
-    df       = charger_donnees()
+    # Si aucune donnée importée, afficher l'écran d'import
+    if st.session_state.df is None:
+        page_import_donnees()
+        return
+
+    df       = st.session_state.df
+    csv_path = st.session_state.csv_path
+    clf, iso = charger_modeles(csv_path)
     page     = sidebar()
 
     if "Tableau de bord" in page:
@@ -960,7 +1039,7 @@ def main():
     elif "Classification" in page:
         page_classification(clf)
     elif "Budget" in page:
-        page_budget()
+        page_budget(csv_path)
     elif "Anomalies" in page:
         page_anomalies(df, iso)
     elif "Journal" in page:
